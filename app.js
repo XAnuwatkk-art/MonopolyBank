@@ -1,5 +1,5 @@
 // ========================================
-// MONOPOLY BANK (Lobby & Real-time System)
+// MONOPOLY BANK (URL Player & Join System)
 // ========================================
 
 const DEFAULT_MONEY = 15000;
@@ -28,7 +28,16 @@ const PLAYERS = {
 };
 
 let bankData = {};
-let currentPlayer = null;
+
+// อ่านค่า player จาก URL Parameter (เช่น ?player=P01) ถ้าไม่มีให้ดีฟอลต์เป็น P01
+const urlParams = new URLSearchParams(window.location.search);
+let currentPlayer = urlParams.get("player") ? urlParams.get("player").toUpperCase() : "P01";
+
+// ตรวจสอบความถูกต้องของรหัสผู้เล่น
+if (!PLAYERS[currentPlayer]) {
+    currentPlayer = "P01";
+}
+
 let isJoined = false;
 
 // โหลดข้อมูลกลางแบบ Real-time
@@ -38,6 +47,12 @@ db.ref("bankData").on("value", function(snapshot) {
         initializeDefaultData();
     } else {
         bankData = data;
+        
+        // เช็คสถานะการเข้าร่วมของตัวละครนี้จาก Database
+        if (bankData[currentPlayer] && bankData[currentPlayer].active) {
+            isJoined = true;
+        }
+        
         renderScreen();
     }
 });
@@ -49,7 +64,7 @@ function initializeDefaultData() {
             name: PLAYERS[playerId],
             money: DEFAULT_MONEY,
             history: [],
-            active: false // เริ่มต้นยังไม่มีใครกดเข้าร่วมห้อง
+            active: false
         };
     });
     db.ref("bankData").set(initialData);
@@ -63,8 +78,8 @@ function renderScreen() {
     const lobbyScreen = document.getElementById("lobbyScreen");
     const gameScreen = document.getElementById("gameScreen");
 
-    if (!isJoined || !currentPlayer || !bankData[currentPlayer] || !bankData[currentPlayer].active) {
-        // แสดงหน้า Lobby
+    if (!isJoined) {
+        // แสดงหน้า Lobby / รอเข้าร่วม
         lobbyScreen.style.display = "block";
         gameScreen.style.display = "none";
         renderLobby();
@@ -77,6 +92,14 @@ function renderScreen() {
 }
 
 function renderLobby() {
+    const welcomeText = document.getElementById("lobbyWelcomeText");
+    const joinButton = document.getElementById("joinButton");
+
+    if (welcomeText && PLAYERS[currentPlayer]) {
+        welcomeText.innerText = `ยินดีต้อนรับคุณเข้าสู่ห้องเกม\nคุณคือ ${PLAYERS[currentPlayer]} (${currentPlayer})`;
+        if (joinButton) joinButton.style.display = "block";
+    }
+
     const listContainer = document.getElementById("lobbyPlayersList");
     if (listContainer) {
         listContainer.innerHTML = "";
@@ -97,10 +120,14 @@ function renderLobby() {
         });
     }
 
-    // ปุ่มรีเซ็ตห้องใน Lobby (ให้แสดงเฉพาะ P01 หรือเปิดให้ทุกคนรีเซ็ตห้องได้)
+    // ปุ่มรีเซ็ตหน้า Lobby (แสดงเฉพาะ P01)
     const lobbyResetSec = document.getElementById("lobbyResetSection");
     if (lobbyResetSec) {
-        lobbyResetSec.style.display = "block";
+        if (currentPlayer === "P01") {
+            lobbyResetSec.style.display = "block";
+        } else {
+            lobbyResetSec.style.display = "none";
+        }
     }
 }
 
@@ -112,7 +139,7 @@ function updateGameScreen() {
     document.getElementById("playerId").innerText = currentPlayer;
     document.getElementById("balance").innerText = "฿" + (pData.money || 0).toLocaleString();
 
-    // แสดงเฉพาะผู้เล่นที่กด active (เข้าร่วมเล่น) แล้วเท่านั้นใน Overview
+    // แสดงเฉพาะผู้เล่นที่กดเข้าร่วมเล่นแล้วเท่านั้นใน Overview
     const overviewContainer = document.getElementById("allPlayersOverview");
     const transferTargetSelect = document.getElementById("transferTarget");
     
@@ -174,7 +201,7 @@ function updateGameScreen() {
         }
     }
 
-    // ปุ่ม RESET ในหน้าเกม (เฉพาะ P01 เท่านั้นถึงจะเห็นและกดได้)
+    // ปุ่ม RESET ในหน้าเกม (เฉพาะ P01)
     const gameResetSec = document.getElementById("gameResetSection");
     if (gameResetSec) {
         if (currentPlayer === "P01") {
@@ -219,24 +246,14 @@ function promptModifyMoney(amount, typeText) {
 // ========================================
 
 document.getElementById("joinButton").onclick = function() {
-    const selectedId = document.getElementById("selectPlayerId").value;
-    currentPlayer = selectedId;
     isJoined = true;
-
-    // เปิดใช้งานตัวละครนี้ในระบบ
     if (bankData[currentPlayer]) {
         bankData[currentPlayer].active = true;
-        // ถ้าเงินเคยถูกรีเซ็ตหรือเป็นค่าว่าง ให้ตั้งเป็น 15000
         if (typeof bankData[currentPlayer].money !== "number") {
             bankData[currentPlayer].money = DEFAULT_MONEY;
         }
         saveData();
     }
-    renderScreen();
-};
-
-document.getElementById("backToLobbyBtn").onclick = function() {
-    isJoined = false;
     renderScreen();
 };
 
@@ -324,8 +341,7 @@ document.getElementById("transferButton").onclick = function() {
 function handleReset() {
     if (confirm("[สำหรับ Player 01] คุณต้องการรีเซ็ตห้องและเงินของผู้เล่นทั้งหมดใหม่ใช่หรือไม่?")) {
         initializeDefaultData();
-        isJoined = false;
-        renderScreen();
+        window.location.reload(); // รีโหลดหน้าเว็บเพื่อให้ทุกคนกลับไปหน้า Lobby
     }
 }
 
