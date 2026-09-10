@@ -1,0 +1,468 @@
+/* ========================================
+   MONOPOLY BANK
+   style.css
+======================================== */
+
+
+/* RESET DEFAULT */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* BODY */
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background: #f2f3f5;
+
+    color: #222;
+
+    min-height: 100vh;
+}
+
+
+/* MAIN APP */
+.app {
+    width: 100%;
+    max-width: 520px;
+
+    margin: 0 auto;
+
+    padding: 16px;
+}
+
+
+/* ========================================
+   HEADER
+======================================== */
+
+.header {
+    background: #c62828;
+
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    text-align: center;
+
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.12);
+}
+
+
+.logo {
+    font-size: 25px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.bank-title {
+    margin-top: 4px;
+
+    font-size: 14px;
+
+    opacity: 0.9;
+
+    letter-spacing: 3px;
+}
+
+
+/* ========================================
+   PLAYER CARD
+======================================== */
+
+.player-card {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 18px;
+
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.08);
+}
+
+
+.player-name {
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.player-id {
+    color: #777;
+
+    margin-top: 4px;
+
+    font-size: 14px;
+}
+
+
+/* ========================================
+   BALANCE
+======================================== */
+
+.balance-card {
+    background: #fff;
+
+    border-radius: 20px;
+
+    padding: 25px 18px;
+
+    text-align: center;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.10);
+}
+
+
+.balance-label {
+    font-size: 14px;
+
+    color: #777;
+
+    margin-bottom: 8px;
+}
+
+
+.balance {
+    font-size: 44px;
+
+    font-weight: 800;
+
+    color: #1b5e20;
+
+    word-break: break-word;
+}
+
+
+/* ========================================
+   SECTIONS
+======================================== */
+
+.money-section,
+.custom-section,
+.history-section {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 18px;
+
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.07);
+}
+
+
+h2 {
+    font-size: 18px;
+
+    margin-bottom: 14px;
+}
+
+
+/* ========================================
+   BUTTON GRID
+======================================== */
+
+.button-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 9px;
+}
+
+
+button {
+    font-family: inherit;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+    
+    /* ป้องกันดีเลย์และช่วยให้การแตะตอบสนองไวขึ้นบน iOS */
+    touch-action: manipulation;
+}
+
+
+.money-button {
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 15px 8px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    transition:
+        transform 0.08s,
+        opacity 0.08s;
+}
+
+
+.money-button:active {
+    transform: scale(0.96);
+
+    opacity: 0.8;
+}
+
+
+/* ADD */
+.add {
+    background: #dff4e2;
+
+    color: #176b25;
+}
+
+
+/* SUBTRACT */
+.subtract {
+    background: #fde1e1;
+
+    color: #a51d1d;
+}
+
+
+/* ========================================
+   CUSTOM AMOUNT
+======================================== */
+
+#customAmount {
+    width: 100%;
+
+    height: 52px;
+
+    border: 2px solid #ddd;
+
+    border-radius: 12px;
+
+    padding: 0 15px;
+
+    font-size: 18px;
+
+    outline: none;
+
+    margin-bottom: 10px;
+
+    /* ป้องกันดีเลย์บน iOS */
+    touch-action: manipulation;
+}
+
+
+#customAmount:focus {
+    border-color: #777;
+}
+
+
+.custom-buttons {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+}
+
+
+.custom-button {
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 15px 10px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+.custom-button:active {
+    transform: scale(0.97);
+}
+
+
+/* ========================================
+   RESET
+======================================== */
+
+.reset-section {
+    margin-bottom: 18px;
+}
+
+
+.reset-button {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 14px;
+
+    padding: 17px;
+
+    background: #333;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.15);
+}
+
+
+.reset-button:active {
+    transform: scale(0.98);
+
+    background: #111;
+}
+
+
+/* ========================================
+   HISTORY
+======================================== */
+
+.history {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.empty-history {
+    text-align: center;
+
+    color: #999;
+
+    padding: 20px 10px;
+}
+
+
+.history-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 13px;
+
+    background: #f7f7f7;
+
+    border-radius: 12px;
+}
+
+
+.history-type {
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+.history-time {
+    font-size: 11px;
+
+    color: #999;
+
+    margin-top: 3px;
+}
+
+
+.history-right {
+    text-align: right;
+}
+
+
+.history-add {
+    color: #16802a;
+
+    font-weight: 700;
+}
+
+
+.history-subtract {
+    color: #c62828;
+
+    font-weight: 700;
+}
+
+
+.history-balance {
+    color: #777;
+
+    font-size: 11px;
+
+    margin-top: 3px;
+}
+
+
+/* ========================================
+   FOOTER
+======================================== */
+
+.footer {
+    text-align: center;
+
+    color: #999;
+
+    font-size: 11px;
+
+    padding: 10px 0 25px;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 380px) {
+
+    .app {
+        padding: 12px;
+    }
+
+
+    .balance {
+        font-size: 36px;
+    }
+
+
+    .money-button {
+        font-size: 14px;
+
+        padding: 14px 5px;
+    }
+
+}

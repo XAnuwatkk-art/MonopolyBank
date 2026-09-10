@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- ป้องกันการซูมหน้าจอด้วยการแตะสองครั้งบน iOS Safari -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Monopoly Bank</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">🎩 MONOPOLY</div>
+        <div class="bank-title">BANK</div>
+    </header>
+
+
+    <!-- PLAYER -->
+    <section class="player-card">
+
+        <div>
+            <div id="playerName" class="player-name">
+                PLAYER 01
+            </div>
+
+            <div id="playerId" class="player-id">
+                P01
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- BALANCE -->
+    <section class="balance-card">
+
+        <div class="balance-label">
+            ยอดเงินคงเหลือ
+        </div>
+
+        <div id="balance" class="balance">
+            ฿15,000
+        </div>
+
+    </section>
+
+
+    <!-- ADD MONEY -->
+    <section class="money-section">
+
+        <h2>เพิ่มเงิน</h2>
+
+        <div class="button-grid">
+
+            <button id="add100"
+                    type="button"
+                    class="money-button add">
+                + ฿100
+            </button>
+
+            <button id="add500"
+                    type="button"
+                    class="money-button add">
+                + ฿500
+            </button>
+
+            <button id="add1000"
+                    type="button"
+                    class="money-button add">
+                + ฿1,000
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- SUBTRACT MONEY -->
+    <section class="money-section">
+
+        <h2>หักเงิน</h2>
+
+        <div class="button-grid">
+
+            <button id="subtract100"
+                    type="button"
+                    class="money-button subtract">
+                − ฿100
+            </button>
+
+            <button id="subtract500"
+                    type="button"
+                    class="money-button subtract">
+                − ฿500
+            </button>
+
+            <button id="subtract1000"
+                    type="button"
+                    class="money-button subtract">
+                − ฿1,000
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CUSTOM AMOUNT -->
+    <section class="custom-section">
+
+        <h2>จำนวนเงินอื่น ๆ</h2>
+
+        <input id="customAmount"
+               type="number"
+               inputmode="numeric"
+               min="1"
+               placeholder="ใส่จำนวนเงิน">
+
+        <div class="custom-buttons">
+
+            <button id="addCustom"
+                    type="button"
+                    class="custom-button add">
+                + เพิ่มเงิน
+            </button>
+
+            <button id="subtractCustom"
+                    type="button"
+                    class="custom-button subtract">
+                − หักเงิน
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESET -->
+    <section class="reset-section">
+
+        <button id="resetButton"
+                type="button"
+                class="reset-button">
+
+            🔄 RESET เงินเป็น ฿15,000
+
+        </button>
+
+    </section>
+
+
+    <!-- HISTORY -->
+    <section class="history-section">
+
+        <h2>ประวัติรายการ</h2>
+
+        <div id="history" class="history">
+
+            <div class="empty-history">
+                ยังไม่มีรายการ
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        MONOPOLY BANK SYSTEM
+    </footer>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
