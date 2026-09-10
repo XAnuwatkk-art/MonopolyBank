@@ -560,7 +560,7 @@ if (resetButton) {
 
         // ใช้ confirm แบบปลอดภัย หรือถ้าหน้าจอมือถือบล็อก ให้รีเซ็ตทันที
         const confirmed = window.confirm(
-            "ต้องการรีเซ็ต " + player.name + " กลับเป็น ฿15,000 หรือไม่?"
+            "ต้องการรีเซ็ต " + player.name + " หรือไม่?"
         );
 
         if (confirmed) {
