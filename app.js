@@ -66,14 +66,14 @@ function saveData() {
 
 // อัปเดตหน้าจอทั้งหมด (ยอดของเรา, ภาพรวมทุกคน, และประวัติ)
 function updateScreen() {
-    if (!bankData[currentPlayer]) return;
+    if (!bankData || !bankData[currentPlayer]) return;
 
     const pData = bankData[currentPlayer];
 
     // 1. แสดงชื่อและยอดเงินของเรา
     document.getElementById("playerName").innerText = pData.name;
     document.getElementById("playerId").innerText = currentPlayer;
-    document.getElementById("balance").innerText = "฿" + pData.money.toLocaleString();
+    document.getElementById("balance").innerText = "฿" + (pData.money || 0).toLocaleString();
 
     // 2. แสดงยอดเงินรวมของผู้เล่นทุกคน (Overview)
     const overviewContainer = document.getElementById("allPlayersOverview");
@@ -90,7 +90,7 @@ function updateScreen() {
                         ${bankData[id].name} ${isMe ? '(คุณ)' : ''}
                     </span>
                     <span style="font-weight: bold; color: #2e7d32;">
-                        ฿${bankData[id].money.toLocaleString()}
+                        ฿${(bankData[id].money || 0).toLocaleString()}
                     </span>
                 `;
                 overviewContainer.appendChild(row);
@@ -100,41 +100,47 @@ function updateScreen() {
 
     // 3. แสดงประวัติรายการ
     const historyContainer = document.getElementById("history");
-    historyContainer.innerHTML = "";
+    if (historyContainer) {
+        historyContainer.innerHTML = "";
 
-    if (!pData.history || pData.history.length === 0) {
-        historyContainer.innerHTML = '<div class="empty-history">ยังไม่มีรายการ</div>';
-        return;
+        if (!pData.history || pData.history.length === 0) {
+            historyContainer.innerHTML = '<div class="empty-history">ยังไม่มีรายการ</div>';
+            return;
+        }
+
+        const reversedHistory = [...pData.history].reverse();
+        reversedHistory.forEach(function(item) {
+            const div = document.createElement("div");
+            div.className = "history-item";
+
+            const typeClass = item.amount > 0 ? "history-add" : "history-subtract";
+            const sign = item.amount > 0 ? "+" : "";
+
+            div.innerHTML = `
+                <div>
+                    <div class="history-type">${item.type}</div>
+                    <div class="history-time">${item.time}</div>
+                </div>
+                <div class="history-right">
+                    <div class="${typeClass}">${sign}฿${item.amount.toLocaleString()}</div>
+                    <div class="history-balance">คงเหลือ ฿${item.balance.toLocaleString()}</div>
+                </div>
+            `;
+            historyContainer.appendChild(div);
+        });
     }
-
-    const reversedHistory = [...pData.history].reverse();
-    reversedHistory.forEach(function(item) {
-        const div = document.createElement("div");
-        div.className = "history-item";
-
-        const typeClass = item.amount > 0 ? "history-add" : "history-subtract";
-        const sign = item.amount > 0 ? "+" : "";
-
-        div.innerHTML = `
-            <div>
-                <div class="history-type">${item.type}</div>
-                <div class="history-time">${item.time}</div>
-            </div>
-            <div class="history-right">
-                <div class="${typeClass}">${sign}฿${item.amount.toLocaleString()}</div>
-                <div class="history-balance">คงเหลือ ฿${item.balance.toLocaleString()}</div>
-            </div>
-        `;
-        historyContainer.appendChild(div);
-    });
 }
 
 function modifyMoney(amount, typeText) {
     if (!bankData[currentPlayer]) return;
 
-    bankData[currentPlayer].money += amount;
+    bankData[currentPlayer].money = (bankData[currentPlayer].money || 0) + amount;
     if (bankData[currentPlayer].money < 0) {
         bankData[currentPlayer].money = 0;
+    }
+
+    if (!bankData[currentPlayer].history) {
+        bankData[currentPlayer].history = [];
     }
 
     const now = new Date();
@@ -200,13 +206,16 @@ document.getElementById("transferButton").addEventListener("click", function() {
         return;
     }
 
-    if (bankData[currentPlayer].money < amount) {
+    if ((bankData[currentPlayer].money || 0) < amount) {
         alert("ยอดเงินในบัญชีของคุณไม่พอโอนครับ!");
         return;
     }
 
     const now = new Date();
     const timeString = now.toLocaleDateString("th-TH") + " " + now.toLocaleTimeString("th-TH", {hour: '2-digit', minute:'2-digit'});
+
+    if (!bankData[currentPlayer].history) bankData[currentPlayer].history = [];
+    if (!bankData[targetPlayer].history) bankData[targetPlayer].history = [];
 
     // หักเงินผู้ส่ง
     bankData[currentPlayer].money -= amount;
@@ -218,7 +227,7 @@ document.getElementById("transferButton").addEventListener("click", function() {
     });
 
     // เพิ่มเงินผู้รับ
-    bankData[targetPlayer].money += amount;
+    bankData[targetPlayer].money = (bankData[targetPlayer].money || 0) + amount;
     bankData[targetPlayer].history.push({
         type: `รับโอนจาก ${PLAYERS[currentPlayer]} (${currentPlayer})`,
         amount: amount,
