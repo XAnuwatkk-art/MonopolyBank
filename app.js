@@ -1,5 +1,5 @@
 // ========================================
-// MONOPOLY BANK (URL Player & Join System)
+// MONOPOLY BANK (Nickname Replace & Global Feed)
 // ========================================
 
 const DEFAULT_MONEY = 15000;
@@ -29,11 +29,9 @@ const PLAYERS = {
 
 let bankData = {};
 
-// อ่านค่า player จาก URL Parameter (เช่น ?player=P01) ถ้าไม่มีให้ดีฟอลต์เป็น P01
 const urlParams = new URLSearchParams(window.location.search);
 let currentPlayer = urlParams.get("player") ? urlParams.get("player").toUpperCase() : "P01";
 
-// ตรวจสอบความถูกต้องของรหัสผู้เล่น
 if (!PLAYERS[currentPlayer]) {
     currentPlayer = "P01";
 }
@@ -48,9 +46,10 @@ db.ref("bankData").on("value", function(snapshot) {
     } else {
         bankData = data;
         
-        // เช็คสถานะการเข้าร่วมของตัวละครนี้จาก Database
         if (bankData[currentPlayer] && bankData[currentPlayer].active) {
             isJoined = true;
+        } else {
+            isJoined = false;
         }
         
         renderScreen();
@@ -58,12 +57,14 @@ db.ref("bankData").on("value", function(snapshot) {
 });
 
 function initializeDefaultData() {
-    let initialData = {};
+    let initialData = {
+        globalHistory: []
+    };
     Object.keys(PLAYERS).forEach(function(playerId) {
         initialData[playerId] = {
             name: PLAYERS[playerId],
+            nickname: "",
             money: DEFAULT_MONEY,
-            history: [],
             active: false
         };
     });
@@ -79,12 +80,10 @@ function renderScreen() {
     const gameScreen = document.getElementById("gameScreen");
 
     if (!isJoined) {
-        // แสดงหน้า Lobby / รอเข้าร่วม
         lobbyScreen.style.display = "block";
         gameScreen.style.display = "none";
         renderLobby();
     } else {
-        // แสดงหน้าเกมหลัก
         lobbyScreen.style.display = "none";
         gameScreen.style.display = "block";
         updateGameScreen();
@@ -106,11 +105,13 @@ function renderLobby() {
         Object.keys(PLAYERS).forEach(function(id) {
             if (bankData[id]) {
                 const isActive = bankData[id].active;
+                // ถ้ามีชื่อเล่น ให้โชว์ชื่อเล่นในวงเล็บหลัง PLAYER 01
+                const displayName = bankData[id].nickname ? `${PLAYERS[id]} (${bankData[id].nickname})` : PLAYERS[id];
                 const row = document.createElement("div");
                 row.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 12px; border-radius: 8px; font-size: 14px; border: 1px solid " + (isActive ? "#a5d6a7" : "#eee") + ";";
                 
                 row.innerHTML = `
-                    <span style="font-weight: bold; color: #333;">${bankData[id].name}</span>
+                    <span style="font-weight: bold; color: #333;">${displayName}</span>
                     <span style="font-weight: bold; color: ${isActive ? '#2e7d32' : '#888'};">
                         ${isActive ? '✅ เข้าร่วมแล้ว' : '⏳ รอเข้าร่วม'}
                     </span>
@@ -120,7 +121,6 @@ function renderLobby() {
         });
     }
 
-    // ปุ่มรีเซ็ตหน้า Lobby (แสดงเฉพาะ P01)
     const lobbyResetSec = document.getElementById("lobbyResetSection");
     if (lobbyResetSec) {
         if (currentPlayer === "P01") {
@@ -135,11 +135,12 @@ function updateGameScreen() {
     if (!bankData[currentPlayer]) return;
     const pData = bankData[currentPlayer];
 
-    document.getElementById("playerName").innerText = pData.name;
-    document.getElementById("playerId").innerText = currentPlayer;
+    // 🎯 แทนที่ชื่อด้วยชื่อเล่นในช่องการ์ดสีเขียว (ถ้ามีชื่อเล่น ให้ใช้ชื่อเล่นหลักเลย ถ้าไม่มีใช้ชื่อเดิม)
+    const displayName = pData.nickname ? pData.nickname : PLAYERS[currentPlayer];
+    document.getElementById("playerName").innerText = displayName;
+    document.getElementById("playerId").innerText = `${currentPlayer} (${PLAYERS[currentPlayer]})`;
     document.getElementById("balance").innerText = "฿" + (pData.money || 0).toLocaleString();
 
-    // แสดงเฉพาะผู้เล่นที่กดเข้าร่วมเล่นแล้วเท่านั้นใน Overview
     const overviewContainer = document.getElementById("allPlayersOverview");
     const transferTargetSelect = document.getElementById("transferTarget");
     
@@ -149,13 +150,14 @@ function updateGameScreen() {
     Object.keys(PLAYERS).forEach(function(id) {
         if (bankData[id] && bankData[id].active) {
             const isMe = (id === currentPlayer);
+            const targetDisplayName = bankData[id].nickname ? bankData[id].nickname : PLAYERS[id];
             
             // Overview Box
             const row = document.createElement("div");
             row.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; border-radius: 8px; font-size: 14px; border: 1px solid " + (isMe ? "#ffa726" : "#eee") + ";";
             row.innerHTML = `
                 <span style="font-weight: bold; color: ${isMe ? '#e65100' : '#333'};">
-                    ${bankData[id].name} ${isMe ? '(คุณ)' : ''}
+                    ${targetDisplayName} ${isMe ? '(คุณ)' : ''} <span style="font-size: 11px; color: #888; font-weight: normal;">[${PLAYERS[id]}]</span>
                 </span>
                 <span style="font-weight: bold; color: #2e7d32;">
                     ฿${(bankData[id].money || 0).toLocaleString()}
@@ -163,45 +165,45 @@ function updateGameScreen() {
             `;
             overviewContainer.appendChild(row);
 
-            // Dropdown โอนเงิน (ไม่รวมตัวเอง)
+            // Dropdown โอนเงิน (แสดงชื่อเล่นของผู้รับ)
             if (!isMe && transferTargetSelect) {
                 const opt = document.createElement("option");
                 opt.value = id;
-                opt.text = bankData[id].name;
+                opt.text = `${targetDisplayName} [${PLAYERS[id]}]`;
                 transferTargetSelect.appendChild(opt);
             }
         }
     });
 
-    // ประวัติรายการ
-    const historyContainer = document.getElementById("history");
-    if (historyContainer) {
-        historyContainer.innerHTML = "";
-        if (!pData.history || pData.history.length === 0) {
-            historyContainer.innerHTML = '<div class="empty-history">ยังไม่มีรายการ</div>';
+    // ประวัติส่วนกลาง
+    const globalHistoryContainer = document.getElementById("globalHistory");
+    if (globalHistoryContainer) {
+        globalHistoryContainer.innerHTML = "";
+        const gHistory = bankData.globalHistory || [];
+        
+        if (gHistory.length === 0) {
+            globalHistoryContainer.innerHTML = '<div class="empty-history">ยังไม่มีรายการเคลื่อนไหว</div>';
         } else {
-            const reversedHistory = [...pData.history].reverse();
-            reversedHistory.forEach(function(item) {
+            const reversedGlobal = [...gHistory].reverse();
+            reversedGlobal.forEach(function(item) {
                 const div = document.createElement("div");
                 div.className = "history-item";
                 const typeClass = item.amount > 0 ? "history-add" : "history-subtract";
                 const sign = item.amount > 0 ? "+" : "";
                 div.innerHTML = `
                     <div>
-                        <div class="history-type">${item.type}</div>
+                        <div class="history-type">${item.text}</div>
                         <div class="history-time">${item.time}</div>
                     </div>
                     <div class="history-right">
                         <div class="${typeClass}">${sign}฿${(item.amount || 0).toLocaleString()}</div>
-                        <div class="history-balance">คงเหลือ ฿${(item.balance || 0).toLocaleString()}</div>
                     </div>
                 `;
-                historyContainer.appendChild(div);
+                globalHistoryContainer.appendChild(div);
             });
         }
     }
 
-    // ปุ่ม RESET ในหน้าเกม (เฉพาะ P01)
     const gameResetSec = document.getElementById("gameResetSection");
     if (gameResetSec) {
         if (currentPlayer === "P01") {
@@ -216,20 +218,28 @@ function modifyMoney(amount, typeText) {
     if (!bankData[currentPlayer]) return;
     let currentMoney = parseInt(bankData[currentPlayer].money) || DEFAULT_MONEY;
     currentMoney += amount;
-    if (currentMoney < 0) currentMoney = 0;
 
     bankData[currentPlayer].money = currentMoney;
-    if (!Array.isArray(bankData[currentPlayer].history)) bankData[currentPlayer].history = [];
 
     const now = new Date();
     const timeString = now.toLocaleDateString("th-TH") + " " + now.toLocaleTimeString("th-TH", {hour: '2-digit', minute:'2-digit'});
 
-    bankData[currentPlayer].history.push({
-        type: typeText,
+    if (!Array.isArray(bankData.globalHistory)) {
+        bankData.globalHistory = [];
+    }
+
+    const pName = bankData[currentPlayer].nickname ? bankData[currentPlayer].nickname : PLAYERS[currentPlayer];
+    bankData.globalHistory.push({
+        text: `${pName}: ${typeText}`,
         amount: amount,
-        time: timeString,
-        balance: currentMoney
+        time: timeString
     });
+
+    if (currentMoney < 0) {
+        alert(`💥 เงินติดลบ ฿${Math.abs(currentMoney).toLocaleString()}!\nคุณล้มละลายและถูกเชิญออกจากห้องเกมแล้ว!`);
+        bankData[currentPlayer].active = false;
+        bankData[currentPlayer].money = 0;
+    }
 
     saveData();
 }
@@ -246,18 +256,19 @@ function promptModifyMoney(amount, typeText) {
 // ========================================
 
 document.getElementById("joinButton").onclick = function() {
-    isJoined = true;
+    const nickInput = document.getElementById("nicknameInput");
+    const nickname = nickInput ? nickInput.value.trim() : "";
+
     if (bankData[currentPlayer]) {
         bankData[currentPlayer].active = true;
-        if (typeof bankData[currentPlayer].money !== "number") {
+        bankData[currentPlayer].nickname = nickname;
+        if (typeof bankData[currentPlayer].money !== "number" || bankData[currentPlayer].money < 0) {
             bankData[currentPlayer].money = DEFAULT_MONEY;
         }
         saveData();
     }
-    renderScreen();
 };
 
-// ปุ่มบวกลบด่วน
 document.getElementById("add100").onclick = () => promptModifyMoney(100, "เพิ่มเงิน (ด่วน)");
 document.getElementById("add500").onclick = () => promptModifyMoney(500, "เพิ่มเงิน (ด่วน)");
 document.getElementById("add1000").onclick = () => promptModifyMoney(1000, "เพิ่มเงิน (ด่วน)");
@@ -313,23 +324,20 @@ document.getElementById("transferButton").onclick = function() {
     const now = new Date();
     const timeString = now.toLocaleDateString("th-TH") + " " + now.toLocaleTimeString("th-TH", {hour: '2-digit', minute:'2-digit'});
 
-    if (!bankData[currentPlayer].history) bankData[currentPlayer].history = [];
-    if (!bankData[targetPlayer].history) bankData[targetPlayer].history = [];
+    if (!Array.isArray(bankData.globalHistory)) {
+        bankData.globalHistory = [];
+    }
 
     bankData[currentPlayer].money -= amount;
-    bankData[currentPlayer].history.push({
-        type: `โอนให้ ${PLAYERS[targetPlayer]}`,
-        amount: -amount,
-        time: timeString,
-        balance: bankData[currentPlayer].money
-    });
-
     bankData[targetPlayer].money = (bankData[targetPlayer].money || 0) + amount;
-    bankData[targetPlayer].history.push({
-        type: `รับโอนจาก ${PLAYERS[currentPlayer]}`,
-        amount: amount,
-        time: timeString,
-        balance: bankData[targetPlayer].money
+
+    const senderName = bankData[currentPlayer].nickname ? bankData[currentPlayer].nickname : PLAYERS[currentPlayer];
+    const targetName = bankData[targetPlayer].nickname ? bankData[targetPlayer].nickname : PLAYERS[targetPlayer];
+
+    bankData.globalHistory.push({
+        text: `${senderName} ➡️ ${targetName}`,
+        amount: -amount,
+        time: timeString
     });
 
     saveData();
@@ -337,11 +345,9 @@ document.getElementById("transferButton").onclick = function() {
     alert("โอนเงินสำเร็จ!");
 };
 
-// ฟังก์ชันรีเซ็ตห้อง (สำหรับ Player 01)
 function handleReset() {
     if (confirm("[สำหรับ Player 01] คุณต้องการรีเซ็ตห้องและเงินของผู้เล่นทั้งหมดใหม่ใช่หรือไม่?")) {
         initializeDefaultData();
-        window.location.reload(); // รีโหลดหน้าเว็บเพื่อให้ทุกคนกลับไปหน้า Lobby
     }
 }
 

@@ -9,7 +9,7 @@
 <body>
 
 <div class="app">
-    <!-- หน้าจอ Lobby / รอเข้าร่วมเกม (อ่านจากลิงก์อัตโนมัติ) -->
+    <!-- หน้าจอ Lobby / รอเข้าร่วมเกม (เพิ่มช่องกรอกชื่อเล่น) -->
     <div id="lobbyScreen" style="display: none;">
         <header class="header">
             <div class="logo">🎩 MONOPOLY</div>
@@ -20,6 +20,13 @@
             <div id="lobbyWelcomeText" style="font-size: 18px; font-weight: bold; color: #1b5e20; margin-bottom: 15px;">
                 กำลังโหลดข้อมูลตัวละคร...
             </div>
+            
+            <!-- ช่องกรอกชื่อเล่น -->
+            <div style="margin-bottom: 12px; text-align: left;">
+                <label style="font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 4px;">ระบุชื่อเล่นของคุณ:</label>
+                <input id="nicknameInput" type="text" placeholder="เช่น บอย เจ้าพ่อที่ดิน" style="width: 100%; height: 42px; border: 1px solid #ccc; border-radius: 8px; padding: 0 10px; font-size: 15px; outline: none; background: white;">
+            </div>
+
             <button id="joinButton" type="button" style="width: 100%; background: #1b5e20; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: bold; cursor: pointer; display: none;">
                 🎮 ยืนยันเข้าร่วมเล่นเกม
             </button>
@@ -108,10 +115,11 @@
             <button id="resetButton" type="button" class="reset-button">🔄 รีเซ็ตเกมใหม่ทั้งหมด</button>
         </section>
 
+        <!-- ประวัติส่วนกลาง -->
         <section class="history-section">
-            <h2>ประวัติรายการ</h2>
-            <div id="history" class="history">
-                <div class="empty-history">ยังไม่มีรายการ</div>
+            <h2>📜 ประวัติความเคลื่อนไหวส่วนกลาง</h2>
+            <div id="globalHistory" class="history">
+                <div class="empty-history">ยังไม่มีรายการเคลื่อนไหว</div>
             </div>
         </section>
 
