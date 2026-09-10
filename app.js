@@ -4,6 +4,22 @@
 
 const DEFAULT_MONEY = 15000;
 
+// ตั้งค่า Firebase พร้อมระบุ Database URL ของคุณ
+const firebaseConfig = {
+    apiKey: "AIzaSyDZbVA5OPmLg7UpmrndqNJ7V7WIS7nmGyA",
+    authDomain: "monopoly-bank-67c20.firebaseapp.com",
+    databaseURL: "https://monopoly-bank-67c20-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "monopoly-bank-67c20",
+    storageBucket: "monopoly-bank-67c20.firebasestorage.app",
+    messagingSenderId: "73719951987",
+    appId: "1:73719951987:web:348b715297478cb244b006",
+    measurementId: "G-YPDREM2M9H"
+};
+
+// เริ่มต้นใช้งาน Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const PLAYERS = {
     P01: "PLAYER 01",
     P02: "PLAYER 02",
