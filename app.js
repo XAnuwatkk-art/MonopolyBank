@@ -1,585 +1,223 @@
 // ========================================
-// MONOPOLY BANK
-// app.js
+// MONOPOLY BANK (Firebase Real-time Version)
 // ========================================
 
 const DEFAULT_MONEY = 15000;
 
-const STORAGE_KEY = "monopoly_bank_v3";
-
-
-/* ========================================
-   PLAYERS
-======================================== */
-
 const PLAYERS = {
-
     P01: "PLAYER 01",
     P02: "PLAYER 02",
     P03: "PLAYER 03",
     P04: "PLAYER 04"
-
 };
 
-
-/* ========================================
-   GET PLAYER
-======================================== */
-
-const urlParams =
-    new URLSearchParams(window.location.search);
-
-let currentPlayer =
-    urlParams.get("player");
-
-
+// ตรวจสอบ Player จาก URL เช่น ?player=P01
+const urlParams = new URLSearchParams(window.location.search);
+let currentPlayer = urlParams.get("player");
 if (!PLAYERS[currentPlayer]) {
-
     currentPlayer = "P01";
-
 }
 
+let bankData = {};
 
-/* ========================================
-   LOAD DATA
-======================================== */
+// ดึงข้อมูลและอัปเดตแบบ Real-time จาก Firebase
+db.ref("bankData").on("value", function(snapshot) {
+    const data = snapshot.val();
 
-function loadData() {
-
-    const saved =
-        localStorage.getItem(STORAGE_KEY);
-
-
-    if (!saved) {
-
-        return {};
-
+    if (!data) {
+        initializeDefaultData();
+    } else {
+        bankData = data;
+        updateScreen();
     }
-
-
-    try {
-
-        return JSON.parse(saved);
-
-    } catch (error) {
-
-        console.log("ไม่สามารถอ่านข้อมูลเดิมได้");
-
-        return {};
-
-    }
-
-}
-
-
-/* ========================================
-   SAVE DATA
-======================================== */
-
-function saveData() {
-
-    localStorage.setItem(
-
-        STORAGE_KEY,
-
-        JSON.stringify(bankData)
-
-    );
-
-}
-
-
-/* ========================================
-   BANK DATA
-======================================== */
-
-let bankData = loadData();
-
-
-/* สร้างผู้เล่น */
-Object.keys(PLAYERS).forEach(function(playerId) {
-
-    if (!bankData[playerId]) {
-
-        bankData[playerId] = {
-
-            name: PLAYERS[playerId],
-
-            money: DEFAULT_MONEY,
-
-            history: []
-
-        };
-
-    }
-
-
-    if (!Array.isArray(bankData[playerId].history)) {
-
-        bankData[playerId].history = [];
-
-    }
-
-
-    if (
-        typeof bankData[playerId].money !== "number"
-    ) {
-
-        bankData[playerId].money =
-            DEFAULT_MONEY;
-
-    }
-
 });
 
-
-saveData();
-
-
-/* ========================================
-   ELEMENTS
-======================================== */
-
-const playerName =
-    document.getElementById("playerName");
-
-const playerId =
-    document.getElementById("playerId");
-
-const balance =
-    document.getElementById("balance");
-
-const history =
-    document.getElementById("history");
-
-const customAmount =
-    document.getElementById("customAmount");
-
-const resetButton =
-    document.getElementById("resetButton");
-
-
-/* ========================================
-   FORMAT MONEY
-======================================== */
-
-function formatMoney(amount) {
-
-    return "฿" +
-        Number(amount).toLocaleString("en-US");
-
-}
-
-
-/* ========================================
-   UPDATE SCREEN
-======================================== */
-
-function updateScreen() {
-
-    const player =
-        bankData[currentPlayer];
-
-
-    playerName.textContent =
-        player.name;
-
-
-    playerId.textContent =
-        currentPlayer;
-
-
-    balance.textContent =
-        formatMoney(player.money);
-
-
-    renderHistory();
-
-}
-
-
-/* ========================================
-   FORMAT TIME
-======================================== */
-
-function formatTime(time) {
-
-    const date =
-        new Date(time);
-
-
-    return date.toLocaleString("th-TH", {
-
-        day: "2-digit",
-
-        month: "2-digit",
-
-        year: "numeric",
-
-        hour: "2-digit",
-
-        minute: "2-digit"
-
+function initializeDefaultData() {
+    let initialData = {};
+    Object.keys(PLAYERS).forEach(function(playerId) {
+        initialData[playerId] = {
+            name: PLAYERS[playerId],
+            money: DEFAULT_MONEY,
+            history: []
+        };
     });
-
+    db.ref("bankData").set(initialData);
 }
 
+function saveData() {
+    db.ref("bankData").set(bankData);
+}
 
-/* ========================================
-   RENDER HISTORY
-======================================== */
+// อัปเดตหน้าจอทั้งหมด (ยอดของเรา, ภาพรวมทุกคน, และประวัติ)
+function updateScreen() {
+    if (!bankData[currentPlayer]) return;
 
-function renderHistory() {
+    const pData = bankData[currentPlayer];
 
-    const player =
-        bankData[currentPlayer];
+    // 1. แสดงชื่อและยอดเงินของเรา
+    document.getElementById("playerName").innerText = pData.name;
+    document.getElementById("playerId").innerText = currentPlayer;
+    document.getElementById("balance").innerText = "฿" + pData.money.toLocaleString();
 
+    // 2. แสดงยอดเงินรวมของผู้เล่นทุกคน (Overview)
+    const overviewContainer = document.getElementById("allPlayersOverview");
+    if (overviewContainer) {
+        overviewContainer.innerHTML = "";
+        Object.keys(PLAYERS).forEach(function(id) {
+            if (bankData[id]) {
+                const isMe = (id === currentPlayer);
+                const row = document.createElement("div");
+                row.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; border-radius: 8px; font-size: 14px; border: 1px solid " + (isMe ? "#ffa726" : "#eee") + ";";
+                
+                row.innerHTML = `
+                    <span style="font-weight: bold; color: ${isMe ? '#e65100' : '#333'};">
+                        ${bankData[id].name} ${isMe ? '(คุณ)' : ''}
+                    </span>
+                    <span style="font-weight: bold; color: #2e7d32;">
+                        ฿${bankData[id].money.toLocaleString()}
+                    </span>
+                `;
+                overviewContainer.appendChild(row);
+            }
+        });
+    }
 
-    if (player.history.length === 0) {
+    // 3. แสดงประวัติรายการ
+    const historyContainer = document.getElementById("history");
+    historyContainer.innerHTML = "";
 
-        history.innerHTML = `
-            <div class="empty-history">
-                ยังไม่มีรายการ
+    if (!pData.history || pData.history.length === 0) {
+        historyContainer.innerHTML = '<div class="empty-history">ยังไม่มีรายการ</div>';
+        return;
+    }
+
+    const reversedHistory = [...pData.history].reverse();
+    reversedHistory.forEach(function(item) {
+        const div = document.createElement("div");
+        div.className = "history-item";
+
+        const typeClass = item.amount > 0 ? "history-add" : "history-subtract";
+        const sign = item.amount > 0 ? "+" : "";
+
+        div.innerHTML = `
+            <div>
+                <div class="history-type">${item.type}</div>
+                <div class="history-time">${item.time}</div>
+            </div>
+            <div class="history-right">
+                <div class="${typeClass}">${sign}฿${item.amount.toLocaleString()}</div>
+                <div class="history-balance">คงเหลือ ฿${item.balance.toLocaleString()}</div>
             </div>
         `;
-
-        return;
-
-    }
-
-
-    history.innerHTML = "";
-
-
-    player.history.forEach(function(item) {
-
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "history-item";
-
-
-        const left =
-            document.createElement("div");
-
-
-        const type =
-            document.createElement("div");
-
-        type.className =
-            "history-type " +
-            (
-                item.type === "add"
-                    ? "history-add"
-                    : "history-subtract"
-            );
-
-        type.textContent =
-            item.label;
-
-
-        const time =
-            document.createElement("div");
-
-        time.className =
-            "history-time";
-
-        time.textContent =
-            formatTime(item.time);
-
-
-        left.appendChild(type);
-
-        left.appendChild(time);
-
-
-        const right =
-            document.createElement("div");
-
-        right.className =
-            "history-right";
-
-
-        const amount =
-            document.createElement("div");
-
-        amount.className =
-            item.type === "add"
-                ? "history-add"
-                : "history-subtract";
-
-
-        amount.textContent =
-            (
-                item.type === "add"
-                    ? "+"
-                    : "-"
-            ) +
-            formatMoney(item.amount);
-
-
-        const remaining =
-            document.createElement("div");
-
-        remaining.className =
-            "history-balance";
-
-        remaining.textContent =
-            "คงเหลือ " +
-            formatMoney(item.balance);
-
-
-        right.appendChild(amount);
-
-        right.appendChild(remaining);
-
-
-        row.appendChild(left);
-
-        row.appendChild(right);
-
-
-        history.appendChild(row);
-
+        historyContainer.appendChild(div);
     });
-
 }
 
+function modifyMoney(amount, typeText) {
+    if (!bankData[currentPlayer]) return;
 
-/* ========================================
-   CHANGE MONEY
-======================================== */
-
-function changeMoney(amount, type) {
-
-    amount = Number(amount);
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        alert("กรุณาใส่จำนวนเงินให้ถูกต้อง");
-
-        return false;
-
+    bankData[currentPlayer].money += amount;
+    if (bankData[currentPlayer].money < 0) {
+        bankData[currentPlayer].money = 0;
     }
 
+    const now = new Date();
+    const timeString = now.toLocaleDateString("th-TH") + " " + now.toLocaleTimeString("th-TH", {hour: '2-digit', minute:'2-digit'});
 
-    const player =
-        bankData[currentPlayer];
+    bankData[currentPlayer].history.push({
+        type: typeText,
+        amount: amount,
+        time: timeString,
+        balance: bankData[currentPlayer].money
+    });
 
+    saveData();
+}
 
-    /* ADD */
-    if (type === "add") {
+// ========================================
+// EVENT LISTENERS
+// ========================================
 
-        player.money += amount;
+document.getElementById("add100").addEventListener("click", () => modifyMoney(100, "เพิ่มเงิน (ด่วน)"));
+document.getElementById("add500").addEventListener("click", () => modifyMoney(500, "เพิ่มเงิน (ด่วน)"));
+document.getElementById("add1000").addEventListener("click", () => modifyMoney(1000, "เพิ่มเงิน (ด่วน)"));
 
-        player.history.unshift({
+document.getElementById("subtract100").addEventListener("click", () => modifyMoney(-100, "หักเงิน (ด่วน)"));
+document.getElementById("subtract500").addEventListener("click", () => modifyMoney(-500, "หักเงิน (ด่วน)"));
+document.getElementById("subtract1000").addEventListener("click", () => modifyMoney(-1000, "หักเงิน (ด่วน)"));
 
-            type: "add",
+document.getElementById("addCustom").addEventListener("click", function() {
+    const input = document.getElementById("customAmount");
+    const val = parseInt(input.value);
+    if (!isNaN(val) && val > 0) {
+        modifyMoney(val, "เพิ่มเงิน (กำหนดเอง)");
+        input.value = "";
+    } else {
+        alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+    }
+});
 
-            label: "เพิ่มเงิน",
+document.getElementById("subtractCustom").addEventListener("click", function() {
+    const input = document.getElementById("customAmount");
+    const val = parseInt(input.value);
+    if (!isNaN(val) && val > 0) {
+        modifyMoney(-val, "หักเงิน (กำหนดเอง)");
+        input.value = "";
+    } else {
+        alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+    }
+});
 
-            amount: amount,
+// ปุ่มโอนเงินให้ผู้เล่นอื่น
+document.getElementById("transferButton").addEventListener("click", function() {
+    const targetPlayer = document.getElementById("transferTarget").value;
+    const input = document.getElementById("transferAmount");
+    const amount = parseInt(input.value);
 
-            balance: player.money,
-
-            time: new Date().toISOString()
-
-        });
-
+    if (targetPlayer === currentPlayer) {
+        alert("ไม่สามารถโอนเงินให้ตัวเองได้ครับ");
+        return;
     }
 
-
-    /* SUBTRACT */
-    else if (type === "subtract") {
-
-        if (amount > player.money) {
-
-            alert("เงินไม่พอสำหรับรายการนี้");
-
-            return false;
-
-        }
-
-
-        player.money -= amount;
-
-        player.history.unshift({
-
-            type: "subtract",
-
-            label: "หักเงิน",
-
-            amount: amount,
-
-            balance: player.money,
-
-            time: new Date().toISOString()
-
-        });
-
+    if (isNaN(amount) || amount <= 0) {
+        alert("กรุณากรอกจำนวนเงินที่ต้องการโอนให้ถูกต้อง");
+        return;
     }
 
+    if (bankData[currentPlayer].money < amount) {
+        alert("ยอดเงินในบัญชีของคุณไม่พอโอนครับ!");
+        return;
+    }
 
-    /* เก็บประวัติสูงสุด 50 รายการ */
-    player.history =
-        player.history.slice(0, 50);
+    const now = new Date();
+    const timeString = now.toLocaleDateString("th-TH") + " " + now.toLocaleTimeString("th-TH", {hour: '2-digit', minute:'2-digit'});
 
+    // หักเงินผู้ส่ง
+    bankData[currentPlayer].money -= amount;
+    bankData[currentPlayer].history.push({
+        type: `โอนให้ ${PLAYERS[targetPlayer]} (${targetPlayer})`,
+        amount: -amount,
+        time: timeString,
+        balance: bankData[currentPlayer].money
+    });
+
+    // เพิ่มเงินผู้รับ
+    bankData[targetPlayer].money += amount;
+    bankData[targetPlayer].history.push({
+        type: `รับโอนจาก ${PLAYERS[currentPlayer]} (${currentPlayer})`,
+        amount: amount,
+        time: timeString,
+        balance: bankData[targetPlayer].money
+    });
 
     saveData();
 
-    updateScreen();
-
-
-    return true;
-
-}
-
-
-/* ========================================
-   QUICK BUTTONS
-======================================== */
-
-document
-    .getElementById("add100")
-    .addEventListener("click", function() {
-
-        changeMoney(100, "add");
-
-    });
-
-
-document
-    .getElementById("add500")
-    .addEventListener("click", function() {
-
-        changeMoney(500, "add");
-
-    });
-
-
-document
-    .getElementById("add1000")
-    .addEventListener("click", function() {
-
-        changeMoney(1000, "add");
-
-    });
-
-
-document
-    .getElementById("subtract100")
-    .addEventListener("click", function() {
-
-        changeMoney(100, "subtract");
-
-    });
-
-
-document
-    .getElementById("subtract500")
-    .addEventListener("click", function() {
-
-        changeMoney(500, "subtract");
-
-    });
-
-
-document
-    .getElementById("subtract1000")
-    .addEventListener("click", function() {
-
-        changeMoney(1000, "subtract");
-
-    });
-
-
-/* ========================================
-   CUSTOM ADD
-======================================== */
-
-document
-    .getElementById("addCustom")
-    .addEventListener("click", function() {
-
-        const amount =
-            Number(customAmount.value);
-
-
-        const success =
-            changeMoney(amount, "add");
-
-
-        if (success) {
-
-            customAmount.value = "";
-
-        }
-
-    });
-
-
-/* ========================================
-   CUSTOM SUBTRACT
-======================================== */
-
-document
-    .getElementById("subtractCustom")
-    .addEventListener("click", function() {
-
-        const amount =
-            Number(customAmount.value);
-
-
-        const success =
-            changeMoney(amount, "subtract");
-
-
-        if (success) {
-
-            customAmount.value = "";
-
-        }
-
-    });
-
-
-/* ========================================
-   🔥 RESET (ปรับปรุงให้ทำงานได้ชัวร์บนมือถือ)
-======================================== */
-
-if (resetButton) {
-
-    resetButton.addEventListener("click", function() {
-
-        const player = bankData[currentPlayer];
-
-        // ใช้ confirm แบบปลอดภัย หรือถ้าหน้าจอมือถือบล็อก ให้รีเซ็ตทันที
-        const confirmed = window.confirm(
-            "ต้องการรีเซ็ต " + player.name + " หรือไม่?"
-        );
-
-        if (confirmed) {
-            player.money = DEFAULT_MONEY;
-            player.history = [];
-
-            saveData();
-            updateScreen();
-
-            alert("รีเซ็ตสำเร็จ!");
-        }
-
-    });
-
-}
-
-
-/* ========================================
-   START
-======================================== */
-
-updateScreen();
+    input.value = "";
+    alert("โอนเงินสำเร็จ!");
+});
+
+document.getElementById("resetButton").addEventListener("click", function() {
+    if (confirm("คุณต้องการรีเซ็ตเงินของผู้เล่นทุกคนกลับเป็น ฿15,000 ใช่หรือไม่?")) {
+        initializeDefaultData();
+    }
+});

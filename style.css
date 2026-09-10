@@ -1,468 +1,234 @@
-/* ========================================
-   MONOPOLY BANK
-   style.css
-======================================== */
-
-
-/* RESET DEFAULT */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-
-/* BODY */
 body {
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    background: #f2f3f5;
-
-    color: #222;
-
-    min-height: 100vh;
+    background-color: #f4f6f8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
 }
 
-
-/* MAIN APP */
 .app {
     width: 100%;
-    max-width: 520px;
-
-    margin: 0 auto;
-
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     padding: 16px;
+    margin-bottom: 20px;
 }
-
-
-/* ========================================
-   HEADER
-======================================== */
 
 .header {
-    background: #c62828;
-
-    color: white;
-
-    border-radius: 18px;
-
-    padding: 18px;
-
-    text-align: center;
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 14px;
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,0.12);
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
 }
-
 
 .logo {
-    font-size: 25px;
-
-    font-weight: 800;
-
-    letter-spacing: 1px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #1b5e20;
 }
-
 
 .bank-title {
-    margin-top: 4px;
-
     font-size: 14px;
-
-    opacity: 0.9;
-
-    letter-spacing: 3px;
+    font-weight: bold;
+    color: #666;
 }
-
-
-/* ========================================
-   PLAYER CARD
-======================================== */
 
 .player-card {
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 18px;
-
+    background: #1b5e20;
+    color: white;
+    padding: 16px;
+    border-radius: 14px;
     margin-bottom: 14px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,0.08);
 }
-
 
 .player-name {
-    font-size: 22px;
-
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: bold;
 }
-
 
 .player-id {
-    color: #777;
-
-    margin-top: 4px;
-
-    font-size: 14px;
-}
-
-
-/* ========================================
-   BALANCE
-======================================== */
-
-.balance-card {
-    background: #fff;
-
-    border-radius: 20px;
-
-    padding: 25px 18px;
-
-    text-align: center;
-
-    margin-bottom: 18px;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.10);
-}
-
-
-.balance-label {
-    font-size: 14px;
-
-    color: #777;
-
-    margin-bottom: 8px;
-}
-
-
-.balance {
-    font-size: 44px;
-
-    font-weight: 800;
-
-    color: #1b5e20;
-
-    word-break: break-word;
-}
-
-
-/* ========================================
-   SECTIONS
-======================================== */
-
-.money-section,
-.custom-section,
-.history-section {
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 18px;
-
-    margin-bottom: 14px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,0.07);
-}
-
-
-h2 {
-    font-size: 18px;
-
-    margin-bottom: 14px;
-}
-
-
-/* ========================================
-   BUTTON GRID
-======================================== */
-
-.button-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 9px;
-}
-
-
-button {
-    font-family: inherit;
-
-    cursor: pointer;
-
-    -webkit-tap-highlight-color: transparent;
-    
-    /* ป้องกันดีเลย์และช่วยให้การแตะตอบสนองไวขึ้นบน iOS */
-    touch-action: manipulation;
-}
-
-
-.money-button {
-    border: none;
-
-    border-radius: 12px;
-
-    padding: 15px 8px;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    transition:
-        transform 0.08s,
-        opacity 0.08s;
-}
-
-
-.money-button:active {
-    transform: scale(0.96);
-
+    font-size: 13px;
     opacity: 0.8;
 }
 
-
-/* ADD */
-.add {
-    background: #dff4e2;
-
-    color: #176b25;
+.balance-card {
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    margin-bottom: 14px;
 }
 
-
-/* SUBTRACT */
-.subtract {
-    background: #fde1e1;
-
-    color: #a51d1d;
+.balance-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
 }
 
+.balance {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1b5e20;
+}
 
-/* ========================================
-   CUSTOM AMOUNT
-======================================== */
+.money-section, .custom-section, .reset-section, .history-section {
+    background: #fafafa;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
 
-#customAmount {
-    width: 100%;
-
-    height: 52px;
-
-    border: 2px solid #ddd;
-
-    border-radius: 12px;
-
-    padding: 0 15px;
-
-    font-size: 18px;
-
-    outline: none;
-
+.money-section h2, .custom-section h2, .history-section h2 {
+    font-size: 15px;
     margin-bottom: 10px;
+    color: #333;
+}
 
-    /* ป้องกันดีเลย์บน iOS */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.money-button {
+    padding: 12px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
     touch-action: manipulation;
 }
 
-
-#customAmount:focus {
-    border-color: #777;
+.money-button.add {
+    background-color: #2e7d32;
 }
 
+.money-button.subtract {
+    background-color: #c62828;
+}
+
+.custom-section input {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    outline: none;
+    background: white;
+}
 
 .custom-buttons {
     display: grid;
-
     grid-template-columns: 1fr 1fr;
-
-    gap: 10px;
+    gap: 8px;
 }
-
 
 .custom-button {
+    padding: 12px 0;
     border: none;
-
-    border-radius: 12px;
-
-    padding: 15px 10px;
-
-    font-size: 16px;
-
-    font-weight: 700;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    touch-action: manipulation;
 }
 
-
-.custom-button:active {
-    transform: scale(0.97);
+.custom-button.add {
+    background-color: #2e7d32;
 }
 
-
-/* ========================================
-   RESET
-======================================== */
-
-.reset-section {
-    margin-bottom: 18px;
+.custom-button.subtract {
+    background-color: #c62828;
 }
-
 
 .reset-button {
     width: 100%;
-
-    border: none;
-
-    border-radius: 14px;
-
-    padding: 17px;
-
-    background: #333;
-
+    padding: 12px;
+    background-color: #455a64;
     color: white;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,0.15);
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
 }
-
-
-.reset-button:active {
-    transform: scale(0.98);
-
-    background: #111;
-}
-
-
-/* ========================================
-   HISTORY
-======================================== */
 
 .history {
+    max-height: 180px;
+    overflow-y: auto;
     display: flex;
-
     flex-direction: column;
-
-    gap: 10px;
+    gap: 6px;
 }
-
 
 .empty-history {
     text-align: center;
-
-    color: #999;
-
-    padding: 20px 10px;
+    color: #888;
+    font-size: 13px;
+    padding: 10px 0;
 }
-
 
 .history-item {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    gap: 10px;
-
-    padding: 13px;
-
-    background: #f7f7f7;
-
-    border-radius: 12px;
+    border: 1px solid #eee;
+    font-size: 13px;
 }
-
 
 .history-type {
-    font-size: 15px;
-
-    font-weight: 700;
+    font-weight: bold;
+    color: #333;
 }
-
 
 .history-time {
     font-size: 11px;
-
-    color: #999;
-
-    margin-top: 3px;
+    color: #888;
 }
-
 
 .history-right {
     text-align: right;
 }
 
-
 .history-add {
-    color: #16802a;
-
-    font-weight: 700;
+    color: #2e7d32;
+    font-weight: bold;
 }
-
 
 .history-subtract {
     color: #c62828;
-
-    font-weight: 700;
+    font-weight: bold;
 }
-
 
 .history-balance {
-    color: #777;
-
     font-size: 11px;
-
-    margin-top: 3px;
+    color: #666;
 }
-
-
-/* ========================================
-   FOOTER
-======================================== */
 
 .footer {
     text-align: center;
-
-    color: #999;
-
     font-size: 11px;
-
-    padding: 10px 0 25px;
-}
-
-
-/* ========================================
-   MOBILE
-======================================== */
-
-@media (max-width: 380px) {
-
-    .app {
-        padding: 12px;
-    }
-
-
-    .balance {
-        font-size: 36px;
-    }
-
-
-    .money-button {
-        font-size: 14px;
-
-        padding: 14px 5px;
-    }
-
+    color: #aaa;
+    margin-top: 10px;
 }
