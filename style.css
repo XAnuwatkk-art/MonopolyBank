@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -32,17 +33,8 @@ body {
     border-bottom: 2px solid #eee;
 }
 
-.logo {
-    font-weight: bold;
-    font-size: 16px;
-    color: #1b5e20;
-}
-
-.bank-title {
-    font-size: 14px;
-    font-weight: bold;
-    color: #666;
-}
+.logo { font-weight: bold; font-size: 16px; color: #1b5e20; }
+.bank-title { font-size: 14px; font-weight: bold; color: #666; }
 
 .player-card {
     background: #1b5e20;
@@ -52,15 +44,8 @@ body {
     margin-bottom: 14px;
 }
 
-.player-name {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.player-id {
-    font-size: 13px;
-    opacity: 0.8;
-}
+.player-name { font-size: 20px; font-weight: bold; }
+.player-id { font-size: 13px; opacity: 0.8; }
 
 .balance-card {
     background: #ffffff;
@@ -71,17 +56,8 @@ body {
     margin-bottom: 14px;
 }
 
-.balance-label {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 4px;
-}
-
-.balance {
-    font-size: 32px;
-    font-weight: bold;
-    color: #1b5e20;
-}
+.balance-label { font-size: 14px; color: #666; margin-bottom: 4px; }
+.balance { font-size: 32px; font-weight: bold; color: #1b5e20; }
 
 .money-section, .custom-section, .reset-section, .history-section {
     background: #fafafa;
@@ -102,24 +78,22 @@ body {
     gap: 8px;
 }
 
+.money-button, .custom-button, .reset-button {
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
 .money-button {
     padding: 12px 0;
     border: none;
     border-radius: 10px;
     font-size: 15px;
     font-weight: bold;
-    cursor: pointer;
     color: white;
-    touch-action: manipulation;
 }
 
-.money-button.add {
-    background-color: #2e7d32;
-}
-
-.money-button.subtract {
-    background-color: #c62828;
-}
+.money-button.add, .custom-button.add { background-color: #2e7d32; }
+.money-button.subtract, .custom-button.subtract { background-color: #c62828; }
 
 .custom-section input {
     width: 100%;
@@ -145,17 +119,7 @@ body {
     border-radius: 10px;
     font-size: 15px;
     font-weight: bold;
-    cursor: pointer;
     color: white;
-    touch-action: manipulation;
-}
-
-.custom-button.add {
-    background-color: #2e7d32;
-}
-
-.custom-button.subtract {
-    background-color: #c62828;
 }
 
 .reset-button {
@@ -167,8 +131,6 @@ body {
     border-radius: 10px;
     font-size: 15px;
     font-weight: bold;
-    cursor: pointer;
-    touch-action: manipulation;
 }
 
 .history {
@@ -179,56 +141,12 @@ body {
     gap: 6px;
 }
 
-.empty-history {
-    text-align: center;
-    color: #888;
-    font-size: 13px;
-    padding: 10px 0;
-}
-
-.history-item {
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #eee;
-    font-size: 13px;
-}
-
-.history-type {
-    font-weight: bold;
-    color: #333;
-}
-
-.history-time {
-    font-size: 11px;
-    color: #888;
-}
-
-.history-right {
-    text-align: right;
-}
-
-.history-add {
-    color: #2e7d32;
-    font-weight: bold;
-}
-
-.history-subtract {
-    color: #c62828;
-    font-weight: bold;
-}
-
-.history-balance {
-    font-size: 11px;
-    color: #666;
-}
-
-.footer {
-    text-align: center;
-    font-size: 11px;
-    color: #aaa;
-    margin-top: 10px;
-}
+.empty-history { text-align: center; color: #888; font-size: 13px; padding: 10px 0; }
+.history-item { background: white; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; font-size: 13px; }
+.history-type { font-weight: bold; color: #333; }
+.history-time { font-size: 11px; color: #888; }
+.history-right { text-align: right; }
+.history-add { color: #2e7d32; font-weight: bold; }
+.history-subtract { color: #c62828; font-weight: bold; }
+.history-balance { font-size: 11px; color: #666; }
+.footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 10px; }
