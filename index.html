@@ -9,92 +9,126 @@
 <body>
 
 <div class="app">
-    <header class="header">
-        <div class="logo">🎩 MONOPOLY</div>
-        <div class="bank-title">BANK</div>
-    </header>
+    <!-- หน้าจอ Lobby สำหรับเลือกตัวละครและเข้าร่วมเกม -->
+    <div id="lobbyScreen" style="display: none;">
+        <header class="header">
+            <div class="logo">🎩 MONOPOLY</div>
+            <div class="bank-title">LOBBY</div>
+        </header>
 
-    <section class="player-card">
-        <div>
-            <div id="playerName" class="player-name">PLAYER 01</div>
-            <div id="playerId" class="player-id">P01</div>
-        </div>
-    </section>
+        <section class="money-section" style="text-align: center; padding: 20px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #1b5e20;">เลือกตัวละครของคุณ</h2>
+            <div style="margin-bottom: 15px;">
+                <select id="selectPlayerId" style="width: 100%; height: 48px; border-radius: 10px; border: 1px solid #ccc; padding: 0 10px; font-size: 16px; background: white;">
+                    <option value="P01">PLAYER 01 (เจ้าห้อง)</option>
+                    <option value="P02">PLAYER 02</option>
+                    <option value="P03">PLAYER 03</option>
+                    <option value="P04">PLAYER 04</option>
+                </select>
+            </div>
+            <button id="joinButton" type="button" style="width: 100%; background: #1b5e20; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                🎮 เข้าร่วมเล่นเกม
+            </button>
+        </section>
 
-    <section class="balance-card">
-        <div class="balance-label">ยอดเงินคงเหลือ</div>
-        <div id="balance" class="balance">฿15,000</div>
-    </section>
+        <section class="money-section" style="background: #fff3e0; border: 2px solid #ffe0b2;">
+            <h2 style="color: #e65100; font-size: 15px; margin-bottom: 8px;">👥 ผู้เล่นที่อยู่ในห้องขณะนี้</h2>
+            <div id="lobbyPlayersList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </section>
 
-    <section class="money-section" style="background: #fff3e0; border: 2px solid #ffe0b2;">
-        <h2 style="color: #e65100; font-size: 16px; margin-bottom: 10px;">👥 ยอดเงินผู้เล่นทั้งหมด</h2>
-        <div id="allPlayersOverview" style="display: flex; flex-direction: column; gap: 8px;"></div>
-    </section>
+        <!-- ปุ่มรีเซ็ตหน้า Lobby (เฉพาะ P01 หรือใช้เคลียร์ห้อง) -->
+        <section class="reset-section" id="lobbyResetSection" style="display: none;">
+            <button id="lobbyResetButton" type="button" class="reset-button">🔄 รีเซ็ตห้องเกมทั้งหมด</button>
+        </section>
+    </div>
 
-    <section class="money-section" style="background: #e8f5e9; border: 2px solid #a5d6a7;">
-        <h2 style="color: #1b5e20;">💸 โอนเงินให้ผู้เล่นอื่น</h2>
-        <div style="margin-bottom: 10px;">
-            <label style="font-size: 14px; font-weight: bold; color: #333; display: block; margin-bottom: 5px;">เลือกผู้รับ:</label>
-            <select id="transferTarget" style="width: 100%; height: 45px; border-radius: 10px; border: 1px solid #ccc; padding: 0 10px; font-size: 16px; background: white; touch-action: manipulation;">
-                <option value="P01">PLAYER 01</option>
-                <option value="P02">PLAYER 02</option>
-                <option value="P03">PLAYER 03</option>
-                <option value="P04">PLAYER 04</option>
-            </select>
-        </div>
-        <div style="margin-bottom: 12px;">
-            <input id="transferAmount" type="number" inputmode="numeric" min="1" placeholder="จำนวนเงินที่ต้องการโอน" style="width: 100%; height: 45px; border: 1px solid #ccc; border-radius: 10px; padding: 0 12px; font-size: 16px; outline: none; background: white; touch-action: manipulation;">
-        </div>
-        <button id="transferButton" type="button" style="width: 100%; background: #2e7d32; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: bold; cursor: pointer; touch-action: manipulation;">
-            📤 ยืนยันการโอนเงิน
-        </button>
-    </section>
+    <!-- หน้าจอเกมหลัก (ธนาคารส่วนตัว) -->
+    <div id="gameScreen" style="display: none;">
+        <header class="header">
+            <div class="logo">🎩 MONOPOLY</div>
+            <div class="bank-title">BANK</div>
+        </header>
 
-    <section class="money-section">
-        <h2>เพิ่มเงิน</h2>
-        <div class="button-grid">
-            <button id="add100" type="button" class="money-button add">+ ฿100</button>
-            <button id="add500" type="button" class="money-button add">+ ฿500</button>
-            <button id="add1000" type="button" class="money-button add">+ ฿1,000</button>
-        </div>
-    </section>
+        <section class="player-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div id="playerName" class="player-name">PLAYER 01</div>
+                    <div id="playerId" class="player-id">P01</div>
+                </div>
+                <button id="backToLobbyBtn" type="button" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">เปลี่ยนตัวละคร</button>
+            </div>
+        </section>
 
-    <section class="money-section">
-        <h2>หักเงิน</h2>
-        <div class="button-grid">
-            <button id="subtract100" type="button" class="money-button subtract">− ฿100</button>
-            <button id="subtract500" type="button" class="money-button subtract">− ฿500</button>
-            <button id="subtract1000" type="button" class="money-button subtract">− ฿1,000</button>
-        </div>
-    </section>
+        <section class="balance-card">
+            <div class="balance-label">ยอดเงินคงเหลือ</div>
+            <div id="balance" class="balance">฿15,000</div>
+        </section>
 
-    <section class="custom-section">
-        <h2>จำนวนเงินอื่น ๆ</h2>
-        <input id="customAmount" type="number" inputmode="numeric" min="1" placeholder="ใส่จำนวนเงิน">
-        <div class="custom-buttons">
-            <button id="addCustom" type="button" class="custom-button add">+ เพิ่มเงิน</button>
-            <button id="subtractCustom" type="button" class="custom-button subtract">− หักเงิน</button>
-        </div>
-    </section>
+        <section class="money-section" style="background: #fff3e0; border: 2px solid #ffe0b2;">
+            <h2 style="color: #e65100; font-size: 15px; margin-bottom: 10px;">👥 ยอดเงินผู้เล่นในเกม</h2>
+            <div id="allPlayersOverview" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </section>
 
-    <section class="reset-section">
-        <button id="resetButton" type="button" class="reset-button">🔄 RESET</button>
-    </section>
+        <section class="money-section" style="background: #e8f5e9; border: 2px solid #a5d6a7;">
+            <h2 style="color: #1b5e20;">💸 โอนเงินให้ผู้เล่นอื่น</h2>
+            <div style="margin-bottom: 10px;">
+                <label style="font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 4px;">เลือกผู้รับ:</label>
+                <select id="transferTarget" style="width: 100%; height: 42px; border-radius: 8px; border: 1px solid #ccc; padding: 0 10px; font-size: 15px; background: white;"></select>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <input id="transferAmount" type="number" inputmode="numeric" min="1" placeholder="จำนวนเงินที่ต้องการโอน" style="width: 100%; height: 42px; border: 1px solid #ccc; border-radius: 8px; padding: 0 10px; font-size: 15px; outline: none; background: white;">
+            </div>
+            <button id="transferButton" type="button" style="width: 100%; background: #2e7d32; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">
+                📤 ยืนยันการโอนเงิน
+            </button>
+        </section>
 
-    <section class="history-section">
-        <h2>ประวัติรายการ</h2>
-        <div id="history" class="history">
-            <div class="empty-history">ยังไม่มีรายการ</div>
-        </div>
-    </section>
+        <section class="money-section">
+            <h2>เพิ่มเงินด่วน</h2>
+            <div class="button-grid">
+                <button id="add100" type="button" class="money-button add">+ ฿100</button>
+                <button id="add500" type="button" class="money-button add">+ ฿500</button>
+                <button id="add1000" type="button" class="money-button add">+ ฿1,000</button>
+            </div>
+        </section>
 
-    <footer class="footer">MONOPOLY BANK SYSTEM</footer>
+        <section class="money-section">
+            <h2>หักเงินด่วน</h2>
+            <div class="button-grid">
+                <button id="subtract100" type="button" class="money-button subtract">− ฿100</button>
+                <button id="subtract500" type="button" class="money-button subtract">− ฿500</button>
+                <button id="subtract1000" type="button" class="money-button subtract">− ฿1,000</button>
+            </div>
+        </section>
+
+        <section class="custom-section">
+            <h2>จำนวนเงินอื่น ๆ</h2>
+            <input id="customAmount" type="number" inputmode="numeric" min="1" placeholder="ใส่จำนวนเงิน">
+            <div class="custom-buttons">
+                <button id="addCustom" type="button" class="custom-button add">+ เพิ่มเงิน</button>
+                <button id="subtractCustom" type="button" class="custom-button subtract">− หักเงิน</button>
+            </div>
+        </section>
+
+        <!-- ปุ่ม RESET (แสดงเฉพาะ Player 01 เท่านั้น) -->
+        <section class="reset-section" id="gameResetSection" style="display: none;">
+            <button id="resetButton" type="button" class="reset-button">🔄 รีเซ็ตเกมใหม่ทั้งหมด</button>
+        </section>
+
+        <section class="history-section">
+            <h2>ประวัติรายการ</h2>
+            <div id="history" class="history">
+                <div class="empty-history">ยังไม่มีรายการ</div>
+            </div>
+        </section>
+
+        <footer class="footer">MONOPOLY BANK SYSTEM</footer>
+    </div>
 </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
 <script src="app.js"></script>
 </body>
 </html>
